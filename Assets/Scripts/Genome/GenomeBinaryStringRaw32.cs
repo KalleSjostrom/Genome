@@ -4,17 +4,14 @@ using System.Collections;
 public class GenomeBinaryStringRaw32 : BaseGenomeBinary {
 
 	private uint bits;
-	private static uint AllOnes = 2^32;
 
 	public GenomeBinaryStringRaw32(int size) {
-		bits = (uint)(Random.value * AllOnes);
+		bits = (uint)(Random.value * 0xFFFFFFFF);
 		Length = size;
 	}
 
 	public override BaseGenome CreateRandom() {
 		return new GenomeBinaryStringRaw32(Length);
-		/*b.bits = (uint)(Random.value * AllOnes);
-		return b;*/
 	}
 	public override void CloneFrom(BaseGenome a) {
 		bits = (a as GenomeBinaryStringRaw32).bits;
@@ -38,7 +35,7 @@ public class GenomeBinaryStringRaw32 : BaseGenomeBinary {
 	public override void OnePointCrossover(BaseGenome mom, BaseGenome dad, int point) {
 		GenomeBinaryStringRaw32 m = mom as GenomeBinaryStringRaw32;
 		GenomeBinaryStringRaw32 d = dad as GenomeBinaryStringRaw32;
-		uint mask = AllOnes << point;
+		uint mask = 0xFFFFFFFF << point;
 		bits = (mask & m.bits) | (~mask & d.bits);
 	}
 	public override void Modify(int point) {

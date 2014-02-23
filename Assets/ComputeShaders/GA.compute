@@ -1,0 +1,76 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel InitializePopulation 
+#pragma kernel AllOnesFitness
+
+#define thread_group_size_x 8
+#define thread_group_size_y 8
+
+
+struct Individual {
+	uint genome;
+	int fitness;
+};
+#define stride 8;
+
+uniform float seed;
+RWStructuredBuffer<Individual> Population;
+
+float idToIndex(uint3 id) {
+	return id.x + id.y * thread_group_size_x * stride;
+}
+
+float rnd(uint2 p)
+{
+    int n = int(p.x * seed + p.y * 6400.0);
+    n = (n << 13) ^ n;
+    float r = 2.0 - float((n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0;
+    return r / 2.0;
+}
+uint NumberOfSetBits(uint i)
+{
+    i = i - ((i >> 1) & 0x55555555);
+    i = (i & 0x33333333) + ((i >> 2) & 0x33333333);
+    return (((i + (i >> 4)) & 0x0F0F0F0F) * 0x01010101) >> 24;
+}
+
+[numthreads(thread_group_size_x,thread_group_size_y,1)]
+void InitializePopulation(uint3 id : SV_DispatchThreadID)
+{
+	Individual i;
+	i.genome = (uint) (rnd(id.xy) * 0xFFFFFFFF);
+	i.fitness = NumberOfSetBits(i.genome);
+    Population[idToIndex(id)] = i;
+}
+
+[numthreads(thread_group_size_x,thread_group_size_y,1)]
+void AllOnesFitness(uint3 id : SV_DispatchThreadID)
+{
+	Individual i = Population[id.x];
+	i.fitness = NumberOfSetBits(i.genome);
+	Population[idToIndex(id)] = i;
+}
+
+/*
+[numthreads(thread_group_size_x,thread_group_size_y,1)]
+void Select(uint3 id : SV_DispatchThreadID)
+{
+	Individual i = Population[id.x];
+	i.fitness = saturate(i.fitness - cutoff);
+	Population[idToIndex(id)] = i;
+}
+
+[numthreads(thread_group_size_x,thread_group_size_y,1)]
+void Crossover(uint3 id : SV_DispatchThreadID)
+{
+	Individual mom = Population[idToIndex(id)];
+	Individual dad = Population[idToIndex(id)];
+	
+	Individual bro = Population[idToIndex(id)];
+	Individual sis = Population[idToIndex(id)];
+	
+	uint point = (uint) (rnd(id.xy) * 32);
+	
+	uint mask = 0xFFFFFFFF << point;
+	bro.genome = (mask & mom.genome) | (~mask & dad.genome);
+	sis.genome = (mask & dad.genome) | (~mask & mom.genome);
+}*/
