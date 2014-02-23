@@ -17,7 +17,7 @@ public class AllOnesStatistics : Statistics {
 	public override void OnDone() {
 		for (int i = 0; i < avg.Count; i++) {
 			float mean = avg[i];
-			Debug.Log(i + " " + mean);
+			Log.WriteLine(i + ":" + mean);
 		}
 
 		List<PhenomeDescription> list = new List<PhenomeDescription>();
@@ -28,6 +28,6 @@ public class AllOnesStatistics : Statistics {
 		for (int i = 0; i < Mathf.Min(5, Population.Size); i++) {
 			Debug.Log("Fitness " + list[i].Fitness);
 		}
-		Debug.Log("Total Duration: " + Duration);
+		Debug.Log("Total Duration: " + duration);
 	}
 }

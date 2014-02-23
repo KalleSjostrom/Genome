@@ -7,6 +7,17 @@ public abstract class AEnvironment : MonoBehaviour {
 
 	public abstract void FitnessFunction(Population population, GeneticAlgorithm.NextStepDelegate callback);
 
+	public virtual void FitnessFunctionSimple(Population population, GeneticAlgorithm.NextStepDelegate callback) {
+		for (int i = 0; i < population.Size; i++) {
+			PhenomeDescription pd = population[i];
+			pd.Fitness = CalculateFitness(pd.Genome);
+		}
+		
+		CalculateMinMaxTotal(population);
+		callback();
+	}
+
+	public virtual float CalculateFitness(BaseGenome genome) { return 0; }
 
 	// TODO: One calculate function with bitmask.
 	public void CalculateMinMax(Population population) {

@@ -4,19 +4,14 @@ using System.Collections;
 public class AllOnesEnvironment : AEnvironment {
 
 	public override void FitnessFunction(Population population, GeneticAlgorithm.NextStepDelegate callback) {
-		for (int i = 0; i < population.Size; i++) {
-			PhenomeDescription pd = population[i];
-			pd.Fitness = CalculateFitness(pd.Genome as BaseGenomeBinary);
-		}
-
-		CalculateMinMaxTotal(population);
-		callback();
+		FitnessFunctionSimple(population, callback);
 	}
-
-	public float CalculateFitness(BaseGenomeBinary genome) {
+	
+	public override float CalculateFitness(BaseGenome genome) {
+		BaseGenomeBinary g = genome as BaseGenomeBinary;
 		int nrOnes = 0;
-		for (int i = 0; i < genome.Length; i++)
-			nrOnes += genome.IsSet(i) ? 1 : 0;
+		for (int i = 0; i < g.Length; i++)
+			nrOnes += g.IsSet(i) ? 1 : 0;
 		return nrOnes;
 	}
 }
